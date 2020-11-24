@@ -12,3 +12,6 @@ while True:
     k = cv2.waitKey(60)
     if k == 27:
         break
+
+cv2.destroyAllWindows()
+camera.release
