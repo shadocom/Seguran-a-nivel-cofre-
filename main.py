@@ -14,8 +14,8 @@ while True:
 
     maskverde = cv2.inRange(framehsv,menorverde,maiorverde)
     resultadoverde = cv2.bitwise_and(frame,frame,mask=maskverde)
-    framecinzaverde = cv2.cvtColor(resultadoverde, cv.COLOR_BGR2GRAY)
-    _, threshverde = cv2.threshold(framecinzaverde,3,255,cv.THRESH_BINARY)
+    framecinzaverde = cv2.cvtColor(resultadoverde, cv2.COLOR_BGR2GRAY)
+    _, threshverde = cv2.threshold(framecinzaverde,3,255,cv2.THRESH_BINARY)
     contornosverde, _ = cv2.findContours(threshverde, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
     afericao = cv2.rectangle(contornosverde)
