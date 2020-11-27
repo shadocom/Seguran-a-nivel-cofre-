@@ -26,6 +26,8 @@ while True:
                         cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,255))
             cv.drawContours(frame, contorno, -1, (0, 0, 0), 5)
             cv.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 1)
+            recorte = frame[y:y+h,x:x+w]
+            cv.imshow("Recorte",recorte)
 
     cv.imshow("Imagem", frame)
     k = cv.waitKey(60)
