@@ -11,7 +11,10 @@ while True:
     _, frame = camera.read()
     # Aplicando filtro hsv
     framehsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-
+    # Aplicando filtro cinza
+    framegray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    # Aplicando o Cascade
+    mao = car_cascade.detectMultiScale(gray, 1.2, 5)
     # Retorno de array da cor verde
     menorverde = np.array([57,147,129])
     maiorverde = np.array([255,255,255])
@@ -45,6 +48,11 @@ while True:
             # Recorta o ponto de interesse
             recorte = frame[y:y+h,x:x+w]
             cv.imshow("Recorte", recorte)
+
+
+    # Analise do cascade
+    for (x,y,w,h) in mao:
+        cv.rectangle(frame,(x,y),(x+w,y+h),(0,0,255),2)
 
     cv.imshow("Imagem", frame)
     k = cv.waitKey(60)
