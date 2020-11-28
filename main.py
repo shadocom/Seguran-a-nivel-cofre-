@@ -1,12 +1,14 @@
+# Bibliotecas importadas
 import cv2 as cv 
 import numpy as np
 import face_recognition
 import glob
 import os
+from datetime import datetime
 
-# Gera variável para armazenar lista dos rostos
+# Gera lista para armazenar rostos
 faces_encodings = []
-# Gera variável para armazenas nomes referentes a cada rosto
+# Gera lista para armazenar nome de cada rosto
 faces_names = []
 # Obtém o diretório atual
 currentDir = os.getcwd()
@@ -17,14 +19,14 @@ path = os.path.join(currentDir, "faces/")
 lista = [f for f in glob.glob(path+"*.jpg")]
 # Guarda o "tamanho" da lista, ou seja a qntd de rostos na pasta
 tamanhoLista = len(lista)
-# Captura o nome dado para cada rosto
+# Captura o nome dado para cada rosto em uma variável
 names = lista.copy()
 
 # Gera laço de repetição para guardar singularidades de cada face
 for i in range(tamanhoLista):
     # Carrega imagem por imagem 
     presets = face_recognition.load_image_file(lista[i])
-    # Faz o diferenciamento de cada face
+    # Codifica cada face para comparar
     encoding = face_recognition.face_encodings(presets)[0]
     faces_encodings.append(encoding)
     names[i] = names[i].replace(currentDir, "")
@@ -41,15 +43,15 @@ camera = cv.VideoCapture(0)
 # Pegando o treinamento do cascade
 car_cascade = cv.CascadeClassifier("treinamento/cascade.xml")
 
-
 while True:
-    # Gera variáveis para abrir o cofre
+    # Chaves para abrir o cofre
     rostodetectado = False
     cordetectada = False
     maodetectada = False
 
-    # Iniciando a camera
     _, frame = camera.read()
+    # Inverte a imagem da câmera
+    frame = cv.flip(frame, 1)
     # Aplicando filtro hsv
     framehsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
@@ -77,7 +79,7 @@ while True:
         # Impede objetos muito pequenos de serem captados
         if area > 1000:
             cordetectada = True
-            # Coloca texto na cam
+            # Coloca texto na imagem mostrada
             cv.putText(frame, "Cor alvo detectada", (10, 50),
                         cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,0))
             # Desenha contornos ao redor da detecção
@@ -107,36 +109,56 @@ while True:
         rgbSmallFrame, face_locations)
     # Pega o nome do rosto detectado
     face_names = []
+
     # Gera laço para analisar se há um rosto "familiar"
     for face in face_encodings:
         # Faz a comparação da camera com o dataset
         matches = face_recognition.compare_faces(faces_encodings, face)
         # Define nome default como Desconhecido
         name = "Desconhecido"
-        # 
+        # Distância euclidiana para comparação das faces
         face_distances = face_recognition.face_distance(faces_encodings, face)
-        # Considera o ponto de maior similaridade com o dataset
+        # Retorna os índices dos valores mínimos ao longo do eixo euclidiano
         bestMatch = np.argmin(face_distances)
         # Se as imagens "baterem" altera o nome default para o nome da imagem
         if matches[bestMatch]:
             name = faces_names[bestMatch]
-        # 
+        # Adiciona o "nome da face" a lista de nomes
         face_names.append(name)
-    # 
+
+    # Faz a detecção do rosto e gera as posições
     for (top, right, bottom, left), name in zip(face_locations, face_names):
         top = top * 4
         right = right * 4
         bottom = bottom * 4
         left = left * 4
         rostodetectado = True
-        cv.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+        # Desenha o contorno do rosto localizado
+        cv.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 1)
         cv.rectangle(frame, (left, bottom-35), (right, bottom), (0,0,255), cv.FILLED)
-        cv.putText(frame, name, (left+6, bottom-6),
+        cv.putText(frame, name, (left+4, bottom-4),
                     cv.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1)
 
+    # Capta a data e hora atual
+    data_e_hora_atuais = datetime.now()
+    # Formata a escrita da data e pega a hora
+    data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m/%Y %H:%M')
+    # Caso todas as chaves sejam apresentadas
     if rostodetectado and cordetectada and maodetectada == True:
+        # Texto para abrir o cofre
         cv.putText(frame, "Cofre desbloqueado!", (10, 100),
             cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,0))
+        # Gera log de quem abriu
+        try:
+            # Abre o arquivo e escreve
+            arquivo = open("abriu_log/quem_quando.txt", 'a')
+            arquivo.writelines(data_e_hora_em_texto+" "+name+"\n")
+        except:
+            # Confere se existe o arquivo, caso contrário cria e escreve
+            arquivo = open("abriu_log/quem_quando.txt", 'w+')
+            arquivo.writelines(data_e_hora_em_texto+" "+name+"\n")
+        # Fecha o arquivo log
+        arquivo.close()
 
     cv.imshow("Imagem", frame)
     k = cv.waitKey(30)
