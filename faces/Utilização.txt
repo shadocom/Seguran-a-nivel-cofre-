@@ -1,0 +1,2 @@
+Nesta pasta você deve inserir uma foto das pessoas que vão possuir acesso ao cofre.
+O nome que você inserir na foto será o nome pelo o qual o indivíduo será reconhecido pela IA.
