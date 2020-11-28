@@ -3,6 +3,8 @@ import numpy as np
 import os
 
 camera = cv.VideoCapture(0)
+# Pegando o treinamento do cascade
+car_cascade = cv.CascadeClassifier("treinamento/cascade.xml")
 
 while True:
     # Iniciando a camera
