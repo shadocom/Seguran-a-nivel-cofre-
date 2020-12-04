@@ -56,7 +56,8 @@ while True:
     framehsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
     # Parâmetros da cor verde
-    menorverde = np.array([57,147,129])
+    menorverde = np.array([110, 190, 30])
+    #menorverde = np.array([57,147,129])
     maiorverde = np.array([255,255,255])
 
     # Gera máscara de cor com os parâmetros já setados
@@ -65,7 +66,7 @@ while True:
     resultadoverde = cv.bitwise_and(frame, frame, mask=maskverde)
     # Aplica camada cinza para processamento
     framecinzaverde = cv.cvtColor(resultadoverde, cv.COLOR_BGR2GRAY)
-    # Gera thresh // limite da cor
+    # Gera threshold // limite da cor
     _, threshverde = cv.threshold(framecinzaverde, 3, 255, cv.THRESH_BINARY)
     # Pegando partes da cor detectada na cam
     contornosverde, _ = cv.findContours(threshverde, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
@@ -145,6 +146,9 @@ while True:
     data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m/%Y %H:%M')
     # Caso todas as chaves sejam apresentadas
     if rostodetectado and cordetectada and maodetectada == True:
+        # Salvando img de quem abriu
+        diretorio = "abriu_log/{nome}.jpg".format(nome = name)
+        cv.imwrite(diretorio, frame)
         # Texto para abrir o cofre
         cv.putText(frame, "Cofre desbloqueado!", (10, 100),
             cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,0))
