@@ -56,7 +56,7 @@ while True:
     framehsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
     # Parâmetros da cor verde
-    menorverde = np.array([110, 190, 30])
+    menorverde = np.array([57,147,129])
     maiorverde = np.array([255,255,255])
 
     # Gera máscara de cor com os parâmetros já setados
