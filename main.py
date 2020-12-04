@@ -56,7 +56,7 @@ while True:
     framehsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
     # Parâmetros da cor verde
-    menorverde = np.array([57,147,129])
+    menorverde = np.array([110, 190, 30])
     maiorverde = np.array([255,255,255])
 
     # Gera máscara de cor com os parâmetros já setados
@@ -123,6 +123,7 @@ while True:
         # Se as imagens "baterem" altera o nome default para o nome da imagem
         if matches[bestMatch]:
             name = faces_names[bestMatch]
+            rostodetectado = True
         # Adiciona o "nome da face" a lista de nomes
         face_names.append(name)
 
@@ -132,7 +133,6 @@ while True:
         right = right * 4
         bottom = bottom * 4
         left = left * 4
-        rostodetectado = True
         # Desenha o contorno do rosto localizado
         cv.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 1)
         cv.rectangle(frame, (left, bottom-35), (right, bottom), (0,0,255), cv.FILLED)
