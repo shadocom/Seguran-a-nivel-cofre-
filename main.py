@@ -152,11 +152,11 @@ while True:
         try:
             # Abre o arquivo e escreve
             arquivo = open("abriu_log/quem_quando.txt", 'a')
-            arquivo.writelines(data_e_hora_em_texto+" "+name+"\n")
+            arquivo.writelines(data_e_hora_em_texto+"\n"+name+" abriu o cofre "+"\n")
         except:
             # Confere se existe o arquivo, caso contrário cria e escreve
             arquivo = open("abriu_log/quem_quando.txt", 'w+')
-            arquivo.writelines(data_e_hora_em_texto+" "+name+"\n")
+            arquivo.writelines(data_e_hora_em_texto+"\n"+name+" abriu o cofre "+"\n")
         # Fecha o arquivo log
         arquivo.close()
 
