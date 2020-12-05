@@ -42,6 +42,8 @@ face_names = []
 camera = cv.VideoCapture(0)
 # Pegando o treinamento do cascade
 car_cascade = cv.CascadeClassifier("treinamento/cascade.xml")
+# Variável para controle de fotos
+numero = 0
 
 while True:
     # Chaves para abrir o cofre
@@ -127,6 +129,30 @@ while True:
             rostodetectado = True
         # Adiciona o "nome da face" a lista de nomes
         face_names.append(name)
+        # Capta a data e hora atual
+        data_e_hora_atuais = datetime.now()
+        # Formata a escrita da data e pega a hora
+        data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m/%Y %H:%M')
+        # Caso todas as chaves sejam apresentadas
+        if rostodetectado and cordetectada and maodetectada == True:
+            numero+=1
+            # Salvando img de quem abriu
+            diretorio = "abriu_log/fotos/{nome}{n}.jpg".format(nome = name, n = numero)
+            cv.imwrite(diretorio, frame)
+            # Texto para abrir o cofre
+            cv.putText(frame, "Cofre desbloqueado!", (10, 100),
+                cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,0))
+            # Gera log de quem abriu
+            try:
+                # Abre o arquivo e escreve
+                arquivo = open("abriu_log/quem_quando.txt", 'a')
+                arquivo.writelines(data_e_hora_em_texto+"\n"+name+" abriu o cofre "+"\n")
+            except:
+                # Confere se existe o arquivo, caso contrário cria e escreve
+                arquivo = open("abriu_log/quem_quando.txt", 'w+')
+                arquivo.writelines(data_e_hora_em_texto+"\n"+name+" abriu o cofre "+"\n")
+            # Fecha o arquivo log
+            arquivo.close()
 
     # Faz a detecção do rosto e gera as posições
     for (top, right, bottom, left), name in zip(face_locations, face_names):
@@ -139,30 +165,6 @@ while True:
         cv.rectangle(frame, (left, bottom-35), (right, bottom), (0,0,255), cv.FILLED)
         cv.putText(frame, name, (left+4, bottom-4),
                     cv.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 1)
-
-    # Capta a data e hora atual
-    data_e_hora_atuais = datetime.now()
-    # Formata a escrita da data e pega a hora
-    data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m/%Y %H:%M')
-    # Caso todas as chaves sejam apresentadas
-    if rostodetectado and cordetectada and maodetectada == True:
-        # Salvando img de quem abriu
-        diretorio = "abriu_log/{nome}.jpg".format(nome = name)
-        cv.imwrite(diretorio, frame)
-        # Texto para abrir o cofre
-        cv.putText(frame, "Cofre desbloqueado!", (10, 100),
-            cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,0))
-        # Gera log de quem abriu
-        try:
-            # Abre o arquivo e escreve
-            arquivo = open("abriu_log/quem_quando.txt", 'a')
-            arquivo.writelines(data_e_hora_em_texto+"\n"+name+" abriu o cofre "+"\n")
-        except:
-            # Confere se existe o arquivo, caso contrário cria e escreve
-            arquivo = open("abriu_log/quem_quando.txt", 'w+')
-            arquivo.writelines(data_e_hora_em_texto+"\n"+name+" abriu o cofre "+"\n")
-        # Fecha o arquivo log
-        arquivo.close()
 
     cv.imshow("Imagem", frame)
     k = cv.waitKey(30)
