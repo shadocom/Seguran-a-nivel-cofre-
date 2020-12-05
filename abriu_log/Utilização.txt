@@ -1,0 +1,1 @@
+Aqui será armazenado os dados de quem abriu o cofre juntamente com a data e hora de abertura e também uma foto do momento em que foi aberto com o nome de quem abriu.
